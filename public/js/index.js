@@ -9,18 +9,20 @@ Notification.requestPermission().then(function(result) {
 var worker = new Worker("worker.js");
 
 worker.onmessage = function(event) {
-    var n = new Notification('Incoming message', {
-        body: event.data,
-    });
+    if (!document.hasFocus()) {
+        var n = new Notification('Incoming message', {
+            body: event.data,
+        });
 
-    n.onclick = function(event) {
-        event.preventDefault();
-        window.focus();
-        n.close();
-    };
+        n.onclick = function(event) {
+            event.preventDefault();
+            window.focus();
+            n.close();
+        };
+    }
 
     var lastChild = document.getElementById("ws-msg-pull").lastChild;
-    lastChild.innerHTML += `<span>SERVER: "${event.data}</span>"`;
+    lastChild.innerHTML += `<span>${event.data}</span>`;
 }
 
 function handleSubmit() {
@@ -31,7 +33,7 @@ function handleSubmit() {
 
     document.getElementById("ws-msg-pull").appendChild(child);
 
-    setTimeout(() =>  ws.send(msgInput.value), 3000);
+    setTimeout(() => ws.send(JSON.stringify(msgInput.value)), 3000);
 
     return false;
 }

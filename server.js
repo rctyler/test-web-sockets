@@ -2,6 +2,8 @@
 
 var WebSocketServer = require('websocket').server;
 var http = require('http');
+var fs = require('fs');
+var path = require('path');
 
 var server = http.createServer(function handleRequest(request, response) {
     console.log('request ', request.url);
@@ -17,7 +19,7 @@ var server = http.createServer(function handleRequest(request, response) {
         filePath = 'index.html';
     }
 
-    var extName = String(require('path').extname(filePath)).toLowerCase();
+    var extName = String(path.extname(filePath)).toLowerCase();
     var contentType = supportedMimeTypes[extName] || 'text/html';
 
     console.log(extName);
@@ -34,10 +36,10 @@ var server = http.createServer(function handleRequest(request, response) {
 
     console.log(filePath);
 
-    require('fs').readFile(filePath, function(error, content) {
+    fs.readFile(filePath, function(error, content) {
         if (error) {
             if(error.code == 'ENOENT') {
-                require('fs').readFile('./public/html/404.html', function(error, content) {
+                fs.readFile('./public/html/404.html', function(error, content) {
                     response.writeHead(404, { 'Content-Type': contentType });
                     response.end(content, 'utf-8');
                 });
